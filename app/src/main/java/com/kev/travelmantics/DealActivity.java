@@ -1,6 +1,7 @@
 package com.kev.travelmantics;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -19,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 public class DealActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
@@ -26,6 +29,7 @@ public class DealActivity extends AppCompatActivity {
     private static final int PICTURE_RESULT = 42;
     EditText txtTitle, txtDescription, txtPrice;
     TravelDeal deal;
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,8 @@ public class DealActivity extends AppCompatActivity {
         txtTitle.setText(deal.getTitle());
         txtDescription.setText(deal.getDescription());
         txtPrice.setText(deal.getPrice());
-
+        imageView = findViewById(R.id.image);
+        showImage(deal.getImageUrl());
         Button btnImage = findViewById(R.id.btnImage);
         btnImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +84,7 @@ public class DealActivity extends AppCompatActivity {
                         public void onSuccess(Uri uri) {
                             String url = uri.toString();
                             deal.setImageUrl(url);
+                            showImage(url);
                         }
                     });
                 }
@@ -163,5 +169,12 @@ public class DealActivity extends AppCompatActivity {
         txtTitle.setEnabled(isEnabled);
         txtDescription.setEnabled(isEnabled);
         txtPrice.setEnabled(isEnabled);
+    }
+
+    public void showImage(String url) {
+        if (url != null && url.isEmpty() == false) {
+            int width = Resources.getSystem().getDisplayMetrics().widthPixels;
+            Picasso.with(this).load(url).resize(width, width * 2 / 3).centerCrop().into(imageView);
+        }
     }
 }
