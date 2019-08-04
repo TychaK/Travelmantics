@@ -3,9 +3,11 @@ package com.kev.travelmantics;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -83,7 +86,11 @@ public class DealActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             String url = uri.toString();
+                            String pictureName = uri.getPath();
                             deal.setImageUrl(url);
+                            deal.setImageName(pictureName);
+                            Log.d("Image Url is ", url);
+                            Log.d("Image Name is ", pictureName);
                             showImage(url);
                         }
                     });
@@ -130,6 +137,20 @@ public class DealActivity extends AppCompatActivity {
     private void deleteDeal() {
         if (deal == null) {
             Toast.makeText(getApplicationContext(), "Specified deal not found", Toast.LENGTH_LONG).show();
+            if (deal.getImageName() != null && deal.getImageName().isEmpty() == false) {
+                StorageReference picRef = FirebaseUtil.mStorage.getReference().child(deal.getImageName());
+                picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Delete Image", "Image deleted successfully!");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Delete Image", "Error deleting specified image becuase of " + e.getMessage());
+                    }
+                });
+            }
             return;
         } else {
             mDatabaseReference.child(deal.getId()).removeValue();
