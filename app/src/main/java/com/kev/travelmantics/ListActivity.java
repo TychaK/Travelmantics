@@ -25,13 +25,6 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        FirebaseUtil.openFirebaseReference("traveldeals", this);
-//        RecyclerView rvDeals = findViewById(R.id.rvDeals);
-//        final DealAdapter dealAdapter = new DealAdapter();
-//        rvDeals.setAdapter(dealAdapter);
-
-        LinearLayoutManager dealsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-//        rvDeals.setLayoutManager(dealsLayoutManager);
     }
 
     @Override
@@ -60,6 +53,12 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        FirebaseUtil.openFirebaseReference("traveldeals", this);
+        RecyclerView rvDeals = findViewById(R.id.rvDeals);
+        final DealAdapter dealAdapter = new DealAdapter();
+        rvDeals.setAdapter(dealAdapter);
+        LinearLayoutManager dealsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        rvDeals.setLayoutManager(dealsLayoutManager);
         FirebaseUtil.attachListener();
     }
 }
